@@ -1,0 +1,14 @@
+[sqlfluff]
+dialect=bigquery
+indent_unit = space
+exclude_rules = L014,L018,L027,L032,L034,L042,L044
+
+[sqlfluff:rules]
+max_line_length = 120
+tab_space_size = 2
+
+[sqlfluff:rules:L010]
+capitalisation_policy = upper
+
+[sqlfluff:rules:L030]
+extended_capitalisation_policy = upper
