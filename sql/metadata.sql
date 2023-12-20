@@ -1,4 +1,3 @@
-create or replace table cset_openalex.metadata AS 
 with
 field_name_scores AS (
   SELECT
@@ -28,7 +27,7 @@ field_order AS (
 top_fields AS (
   SELECT
     merged_id,
-    ARRAY_AGG(STRUCT(name, score)) AS top_level1_fields
+    ARRAY_AGG(name ORDER BY score DESC) AS top_level1_fields
   FROM
     field_order
   WHERE
@@ -70,16 +69,27 @@ ai_safety_pubs AS (
     preds_str as is_ai_safety
   from
     ai_safety_datasets.ai_safety_predictions
+),
+
+language_id AS (
+  select
+    id,
+    if(title_cld2_lid_success and title_cld2_lid_is_reliable, title_cld2_lid_first_result, null) as title_language,
+    if(abstract_cld2_lid_success and abstract_cld2_lid_is_reliable, abstract_cld2_lid_first_result, null) as abstract_language,
+  from
+    staging_literature.all_metadata_with_cld2_lid
 )
 
 select
   id,
+  title_language,
+  abstract_language,
   top_level1_fields,
   is_ai,
   is_nlp,
   is_cv,
   is_robotics,
-  is_ai_safety
+  is_ai_safety,
 from 
   openalex.works
 inner join
@@ -94,4 +104,7 @@ using(merged_id)
 left join
   ai_safety_pubs
 using(merged_id)
+left join
+  language_id
+using(id)
 
