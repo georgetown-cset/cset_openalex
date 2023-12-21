@@ -1,4 +1,4 @@
-with
+WITH
 field_name_scores AS (
   SELECT
     merged_id,
@@ -48,39 +48,41 @@ top_fields AS (
 ),
 
 ai_pubs AS (
-  select
+  SELECT
     merged_id,
-    ai_filtered or nlp_filtered or cv_filtered or robotics_filtered as is_ai,
-    nlp_filtered as is_nlp,
-    cv_filtered as is_cv,
-    robotics_filtered as is_robotics
-  from
+    ai_filtered OR nlp_filtered OR cv_filtered OR robotics_filtered AS is_ai,
+    nlp_filtered AS is_nlp,
+    cv_filtered AS is_cv,
+    robotics_filtered AS is_robotics
+  FROM
     article_classification.predictions
-  where
-    ai_filtered is true 
-       or nlp_filtered is true 
-       or cv_filtered is true 
-       or robotics_filtered is true
+  WHERE
+    ai_filtered IS TRUE
+    OR nlp_filtered IS TRUE
+    OR cv_filtered IS TRUE
+    OR robotics_filtered IS TRUE
 ),
 
 ai_safety_pubs AS (
-  select
+  SELECT
     merged_id,
-    preds_str as is_ai_safety
-  from
+    preds_str AS is_ai_safety
+  FROM
     ai_safety_datasets.ai_safety_predictions
 ),
 
 language_id AS (
-  select distinct
+  SELECT DISTINCT
     id,
-    if(title_cld2_lid_success and title_cld2_lid_is_reliable, title_cld2_lid_first_result, null) as title_language,
-    if(abstract_cld2_lid_success and abstract_cld2_lid_is_reliable, abstract_cld2_lid_first_result, null) as abstract_language,
-  from
+    IF(title_cld2_lid_success AND title_cld2_lid_is_reliable, title_cld2_lid_first_result, NULL) AS title_language,
+    IF(
+      abstract_cld2_lid_success AND abstract_cld2_lid_is_reliable, abstract_cld2_lid_first_result, NULL
+    ) AS abstract_language
+  FROM
     staging_literature.all_metadata_with_cld2_lid
 )
 
-select
+SELECT
   id,
   title_language,
   abstract_language,
@@ -89,22 +91,21 @@ select
   is_nlp,
   is_cv,
   is_robotics,
-  is_ai_safety,
-from 
+  is_ai_safety
+FROM
   openalex.works
-inner join
+INNER JOIN
   literature.sources
-on id = orig_id
-left join
+  ON id = orig_id
+LEFT JOIN
   top_fields
-using(merged_id) 
-left join
+  USING (merged_id)
+LEFT JOIN
   ai_pubs
-using(merged_id)
-left join
+  USING (merged_id)
+LEFT JOIN
   ai_safety_pubs
-using(merged_id)
-left join
+  USING (merged_id)
+LEFT JOIN
   language_id
-using(id)
-
+  USING (id)

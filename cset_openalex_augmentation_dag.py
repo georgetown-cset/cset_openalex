@@ -83,11 +83,11 @@ with DAG(
                 "destinationTable": {
                     "projectId": PROJECT_ID,
                     "datasetId": staging_dataset,
-                    "tableId": "metadata"
+                    "tableId": "metadata",
                 },
                 "allowLargeResults": True,
                 "createDisposition": "CREATE_IF_NEEDED",
-                "writeDisposition": "WRITE_TRUNCATE"
+                "writeDisposition": "WRITE_TRUNCATE",
             }
         },
     )
@@ -95,8 +95,10 @@ with DAG(
     checks = [
         BigQueryCheckOperator(
             task_id="check_id_unique",
-            sql=(f"select count(distinct(id)) = count(id) from {staging_dataset}.metadata"),
-            use_legacy_sql=False
+            sql=(
+                f"select count(distinct(id)) = count(id) from {staging_dataset}.metadata"
+            ),
+            use_legacy_sql=False,
         )
     ]
     with open(f"{os.environ.get('DAGS_FOLDER')}/{schema_dir}/{table}.json") as f:
@@ -108,10 +110,10 @@ with DAG(
             BigQueryCheckOperator(
                 task_id=f"check_no_huge_change_in_{column_name}",
                 sql=f"select ((select count({column_name}) from {staging_dataset}.{table}) > "
-                    f"(select 0.95*count({column_name}) from {production_dataset}.{table})) and "
-                    f"((select count({column_name}) from {staging_dataset}.{table}) < "
-                    f"(select 1.05*count({column_name}) from {production_dataset}.{table}))",
-                use_legacy_sql=False
+                f"(select 0.95*count({column_name}) from {production_dataset}.{table})) and "
+                f"((select count({column_name}) from {staging_dataset}.{table}) < "
+                f"(select 1.05*count({column_name}) from {production_dataset}.{table}))",
+                use_legacy_sql=False,
             )
         )
         # Check that counts of positive preditions don't change by more than 5% per run
@@ -120,10 +122,10 @@ with DAG(
                 BigQueryCheckOperator(
                     task_id=f"check_no_huge_change_in_{column_name}_predictions",
                     sql=f"select ((select countif({column_name}) from {staging_dataset}.{table}) > "
-                        f"(select 0.95*countif({column_name}) from {production_dataset}.{table})) and "
-                        f"((select countif({column_name}) from {staging_dataset}.{table}) < "
-                        f"(select 1.05*countif({column_name}) from {production_dataset}.{table}))",
-                    use_legacy_sql=False
+                    f"(select 0.95*countif({column_name}) from {production_dataset}.{table})) and "
+                    f"((select countif({column_name}) from {staging_dataset}.{table}) < "
+                    f"(select 1.05*countif({column_name}) from {production_dataset}.{table}))",
+                    use_legacy_sql=False,
                 )
             )
 
@@ -132,7 +134,7 @@ with DAG(
         source_project_dataset_tables=[f"{staging_dataset}.{table}"],
         destination_project_dataset_table=f"{production_dataset}.{table}",
         create_disposition="CREATE_IF_NEEDED",
-        write_disposition="WRITE_TRUNCATE"
+        write_disposition="WRITE_TRUNCATE",
     )
 
     snapshot = BigQueryToBigQueryOperator(
@@ -140,7 +142,7 @@ with DAG(
         source_project_dataset_tables=[f"{production_dataset}.{table}"],
         destination_project_dataset_table=f"{backups_dataset}.{table}_{curr_date}",
         create_disposition="CREATE_IF_NEEDED",
-        write_disposition="WRITE_TRUNCATE"
+        write_disposition="WRITE_TRUNCATE",
     )
 
     pop_descriptions = PythonOperator(
@@ -148,15 +150,19 @@ with DAG(
         op_kwargs={
             "input_schema": f"{os.environ.get('DAGS_FOLDER')}/{schema_dir}/{table}.json",
             "table": f"{production_dataset}.{table}",
-            "table_description": "Metadata containing CSET data augmentation applied to OpenAlex"
+            "table_description": "Metadata containing CSET data augmentation applied to OpenAlex",
         },
-        python_callable=update_table_descriptions
+        python_callable=update_table_descriptions,
     )
 
-    msg_success = get_post_success(
-        "OpenAlex-CSET data updated!", dag
+    msg_success = get_post_success("OpenAlex-CSET data updated!", dag)
+
+    (
+        clear_tmp_dir
+        >> run_metadata
+        >> checks
+        >> push_to_production
+        >> snapshot
+        >> pop_descriptions
+        >> msg_success
     )
-
-    (clear_tmp_dir >> run_metadata >> checks >> push_to_production >> snapshot >> pop_descriptions >> msg_success)
-
-
