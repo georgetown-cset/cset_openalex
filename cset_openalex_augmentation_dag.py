@@ -1,31 +1,27 @@
 import json
 import os
-from datetime import datetime, timedelta
+from datetime import datetime
 
 from airflow import DAG
 from airflow.operators.bash import BashOperator
-from airflow.operators.dummy import DummyOperator
 from airflow.operators.python import BranchPythonOperator, PythonOperator
 from airflow.providers.google.cloud.operators.bigquery import (
     BigQueryCheckOperator,
     BigQueryInsertJobOperator,
-)
-from airflow.providers.google.cloud.operators.cloud_sql import (
-    CloudSQLCreateInstanceDatabaseOperator,
 )
 from airflow.providers.google.cloud.operators.compute import (
     ComputeEngineStartInstanceOperator,
     ComputeEngineStopInstanceOperator,
 )
 from airflow.providers.google.cloud.operators.gcs import GCSDeleteObjectsOperator
+from airflow.providers.google.cloud.operators.kubernetes_engine import (
+    GKEStartPodOperator,
+)
 from airflow.providers.google.cloud.transfers.bigquery_to_bigquery import (
     BigQueryToBigQueryOperator,
 )
 from airflow.providers.google.cloud.transfers.bigquery_to_gcs import (
     BigQueryToGCSOperator,
-)
-from airflow.providers.google.cloud.transfers.gcs_to_bigquery import (
-    GCSToBigQueryOperator,
 )
 from dataloader.airflow_utils.defaults import (
     DAGS_DIR,
@@ -58,17 +54,7 @@ with DAG(
     run_dir = "current_run"
     public_bucket = "mos-static"
     table = "metadata"
-
-    """
-    - clear tmp dir
-    - run query
-    - run checks
-    - push to gcs
-    - push to prod
-    - push to backups
-    - add docs
-    - put on zenodo
-    """
+    gce_resource_id = "cset-openalex-updates"
 
     clear_tmp_dir = GCSDeleteObjectsOperator(
         task_id="clear_tmp_dir", bucket_name=DATA_BUCKET, prefix=tmp_dir
@@ -149,10 +135,45 @@ with DAG(
         task_id="populate_column_documentation_for_" + table,
         op_kwargs={
             "input_schema": f"{os.environ.get('DAGS_FOLDER')}/{schema_dir}/{table}.json",
-            "table": f"{production_dataset}.{table}",
+            "table_name": f"{production_dataset}.{table}",
             "table_description": "Metadata containing CSET data augmentation applied to OpenAlex",
         },
         python_callable=update_table_descriptions,
+    )
+
+    export_metadata = BigQueryToGCSOperator(
+        task_id="export_metadata",
+        source_project_dataset_table=f"{staging_dataset}.metadata",
+        destination_cloud_storage_uris=f"gs://{DATA_BUCKET}/{tmp_dir}/{production_dataset}/data*",
+        export_format="NEWLINE_DELIMITED_JSON",
+    )
+
+    gce_instance_start = ComputeEngineStartInstanceOperator(
+        task_id=f"start-{gce_resource_id}",
+        project_id=PROJECT_ID,
+        zone=GCP_ZONE,
+        resource_id=gce_resource_id,
+    )
+
+    update_zenodo_sequence = [
+        "sudo apt-get -y update",
+        "sudo apt-get install -y zip curl",
+        f"rm -r {production_dataset} || true",
+        f"gsutil -m cp -r gs://{DATA_BUCKET}/{tmp_dir}/{production_dataset} .",
+        f"zip -r {production_dataset}.zip {production_dataset}",
+    ]
+    update_zenodo_script = " && ".join(update_zenodo_sequence)
+
+    update_zenodo = BashOperator(
+        task_id="update_zenodo",
+        bash_command=f'gcloud compute ssh jm3312@{gce_resource_id} --zone {GCP_ZONE} --command "{update_zenodo_script}"',
+    )
+
+    gce_instance_stop = ComputeEngineStopInstanceOperator(
+        task_id=f"stop-{gce_resource_id}",
+        project_id=PROJECT_ID,
+        zone=GCP_ZONE,
+        resource_id=gce_resource_id,
     )
 
     msg_success = get_post_success("OpenAlex-CSET data updated!", dag)
@@ -164,5 +185,9 @@ with DAG(
         >> push_to_production
         >> snapshot
         >> pop_descriptions
+        >> export_metadata
+        >> gce_instance_start
+        >> update_zenodo
+        >> gce_instance_stop
         >> msg_success
     )
