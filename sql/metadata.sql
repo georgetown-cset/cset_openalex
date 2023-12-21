@@ -72,7 +72,7 @@ ai_safety_pubs AS (
 ),
 
 language_id AS (
-  select
+  select distinct
     id,
     if(title_cld2_lid_success and title_cld2_lid_is_reliable, title_cld2_lid_first_result, null) as title_language,
     if(abstract_cld2_lid_success and abstract_cld2_lid_is_reliable, abstract_cld2_lid_first_result, null) as abstract_language,
