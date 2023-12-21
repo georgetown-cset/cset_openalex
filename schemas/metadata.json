@@ -1,0 +1,39 @@
+[
+  {
+    "name": "id",
+    "type": "STRING"
+  },
+  {
+    "name": "title_language",
+    "type": "STRING"
+  },
+  {
+    "name": "abstract_language",
+    "type": "STRING"
+  },
+  {
+    "mode": "REPEATED",
+    "name": "top_level1_fields",
+    "type": "STRING"
+  },
+  {
+    "name": "is_ai",
+    "type": "BOOLEAN"
+  },
+  {
+    "name": "is_nlp",
+    "type": "BOOLEAN"
+  },
+  {
+    "name": "is_cv",
+    "type": "BOOLEAN"
+  },
+  {
+    "name": "is_robotics",
+    "type": "BOOLEAN"
+  },
+  {
+    "name": "is_ai_safety",
+    "type": "BOOLEAN"
+  }
+]
