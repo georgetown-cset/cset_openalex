@@ -5,3 +5,4 @@ gsutil rm -r gs://us-east1-production2023-cc1-01d75926-bucket/dags/sql/cset_open
 
 gsutil cp schemas/* gs://us-east1-production2023-cc1-01d75926-bucket/dags/schemas/cset_openalex/
 gsutil cp sql/* gs://us-east1-production2023-cc1-01d75926-bucket/dags/sql/cset_openalex/
+gsutil cp scripts/upload.py gs://airflow-data-exchange/cset_openalex/

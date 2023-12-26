@@ -14,9 +14,6 @@ from airflow.providers.google.cloud.operators.compute import (
     ComputeEngineStopInstanceOperator,
 )
 from airflow.providers.google.cloud.operators.gcs import GCSDeleteObjectsOperator
-from airflow.providers.google.cloud.operators.kubernetes_engine import (
-    GKEStartPodOperator,
-)
 from airflow.providers.google.cloud.transfers.bigquery_to_bigquery import (
     BigQueryToBigQueryOperator,
 )
@@ -160,7 +157,9 @@ with DAG(
         "sudo apt-get install -y zip curl",
         f"rm -r {production_dataset} || true",
         f"gsutil -m cp -r gs://{DATA_BUCKET}/{tmp_dir}/{production_dataset} .",
+        f"gsutil -m cp -r gs://{DATA_BUCKET}/{production_dataset}/upload.py .",
         f"zip -r {production_dataset}.zip {production_dataset}",
+        f"python3 upload.py {production_dataset}.zip",
     ]
     update_zenodo_script = " && ".join(update_zenodo_sequence)
 

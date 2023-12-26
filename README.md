@@ -10,7 +10,16 @@ each field was collected in more detail:
 
 ### Language ID
 
+Our article linkage pipeline [generates language ID labels](https://github.com/georgetown-cset/article-linking/blob/master/utils/run_lid.py)
+for titles and abstracts using [PYCLD2](https://pypi.org/project/pycld2/). We only include language IDs where PYCLD2
+successfully output a language and marked the output as reliable.
+
 ### Fields of Study
+
+We include the top three level 1 field of study labels generated using the method described in
+[Multi-label Classification of Scientific Research Documents Across Domains and Languages](https://aclanthology.org/2022.sdp-1.12) (Toney & Dunham, sdp 2022).
+We only include these labels for records with a non-null English title and abstract (as detected by PYCLD2), where the
+abstract is over 500 words in length.
 
 ### Subject relevance predictions
 
