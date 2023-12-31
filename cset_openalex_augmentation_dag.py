@@ -159,7 +159,7 @@ with DAG(
         f"gsutil -m cp -r gs://{DATA_BUCKET}/{tmp_dir}/{production_dataset} .",
         f"gsutil -m cp -r gs://{DATA_BUCKET}/{production_dataset}/upload.py .",
         f"zip -r {production_dataset}.zip {production_dataset}",
-        f"python3 upload.py {production_dataset}.zip",
+        "python3 upload.py",
     ]
     update_zenodo_script = " && ".join(update_zenodo_sequence)
 

@@ -24,7 +24,7 @@ def upload(data_fi: str) -> None:
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
-    parser.add_argument("--input_file", default="data.zip")
+    parser.add_argument("--input_file", default="cset_openalex.zip")
     args = parser.parse_args()
 
     upload(args.input_file)
