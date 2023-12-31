@@ -32,14 +32,14 @@ from dataloader.scripts.populate_documentation import update_table_descriptions
 
 args = get_default_args()
 args["retries"] = 1
-args["on_failure_callback"] = None
 
 
 with DAG(
     "cset_openalex_updater",
     default_args=args,
     description="Updates CSET-OpenAlex data dumps",
-    schedule_interval=None,
+    schedule_interval="0 0 25 * *",
+    catchup=False,
 ) as dag:
     production_dataset = "cset_openalex"
     staging_dataset = f"staging_{production_dataset}"
