@@ -23,6 +23,16 @@ abstract is over 500 words in length.
 
 ### Subject relevance predictions
 
+We share outputs for subject classifiers (for more information on how these classifiers were trained
+and deployed, see [our documentation](https://eto.tech/dataset-docs/mac/#identifying-relevance-to-emerging-technology-topics))
+in the following fields:
+
+* `is_cv` - True if a computer vision classifier predicted the work was relevant
+* `is_nlp` - True if a natural language processing classifier predicted the work was relevant
+* `is_ro` - True if a robotics classifier predicted the work was relevant
+* `is_ai` - True if an artificial intelligence classifier predicted the work was relevant, or if any of the computer vision, natural language processing, or robotics classifiers predicted the work was relevant
+* `is_ai_safety` - True if the artificial intelligence classifier predicted the work was relevant to AI, and a separate AI safety classifier also predicted the work was relevant to AI safety
+
 ## Updating the dataset
 
 The dataset is updated monthly through the pipeline in `cset_oepnalex_augmentation_dag.py`. This pipeline runs
