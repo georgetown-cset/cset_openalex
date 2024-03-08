@@ -30,7 +30,7 @@ from dataloader.airflow_utils.defaults import (
 )
 from dataloader.scripts.populate_documentation import update_table_descriptions
 
-args = get_default_args()
+args = get_default_args(pocs=["Jennifer"])
 args["retries"] = 1
 
 
@@ -143,6 +143,7 @@ with DAG(
         source_project_dataset_table=f"{staging_dataset}.metadata",
         destination_cloud_storage_uris=f"gs://{DATA_BUCKET}/{tmp_dir}/{production_dataset}/data*",
         export_format="NEWLINE_DELIMITED_JSON",
+        force_rerun=True,
     )
 
     gce_instance_start = ComputeEngineStartInstanceOperator(
