@@ -21,11 +21,11 @@ jobs:
 #      run: |
 #        coverage run -m pytest tests
 #        coverage xml -o coverage/python.xml
-    - name: Report python coverage
-      uses: orgoro/coverage@v3
-      with:
-        coverageFile: coverage/python.xml
-        token: ${{ secrets.GITHUB_TOKEN }}
+#    - name: Report python coverage
+#      uses: orgoro/coverage@v3
+#      with:
+#        coverageFile: coverage/python.xml
+#        token: ${{ secrets.GITHUB_TOKEN }}
     # The next few steps only apply if you have javascript files
     # - name: Setup node
     #   uses: actions/setup-node@v3
