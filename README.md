@@ -28,7 +28,7 @@ in the following fields:
 
 ## Updating the dataset
 
-The dataset is updated monthly through the pipeline in `cset_oepnalex_augmentation_dag.py`. This pipeline runs
+The dataset is updated monthly through the pipeline in `cset_openalex_augmentation_dag.py`. This pipeline runs
 the query in `sql/metadata.sql` to aggregate CSET metadata associated with each OpenAlex work, backs the
 results up within our internal data warehouse, and updates the data on Zenodo.
 
