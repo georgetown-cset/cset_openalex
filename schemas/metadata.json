@@ -22,16 +22,21 @@
   {
     "name": "is_nlp",
     "type": "BOOLEAN",
-    "description": "True if a CSET classifier predicted this work was relevant to Natural Language Processing, False if the classifier predicted that this work was not relevant to AI, and null if the classifier was not run on this work (i.e. if the work had a non-English or null title and abstract)."
+    "description": "True if a CSET classifier predicted this work was relevant to Natural Language Processing, False if the classifier predicted that this work was not relevant to Natural Language Processing, and null if the classifier was not run on this work (i.e. if the work had a non-English or null title and abstract)."
   },
   {
     "name": "is_cv",
     "type": "BOOLEAN",
-    "description": "True if a CSET classifier predicted this work was relevant to Computer Vision, False if the classifier predicted that this work was not relevant to AI, and null if the classifier was not run on this work (i.e. if the work had a non-English or null title and abstract)."
+    "description": "True if a CSET classifier predicted this work was relevant to Computer Vision, False if the classifier predicted that this work was not relevant to Computer Vision, and null if the classifier was not run on this work (i.e. if the work had a non-English or null title and abstract)."
   },
   {
     "name": "is_robotics",
     "type": "BOOLEAN",
-    "description": "True if a CSET classifier predicted this work was relevant to AI, False if the classifier predicted that this work was not relevant to Robotics, and null if the classifier was not run on this work (i.e. if the work had a non-English or null title and abstract)."
+    "description": "True if a CSET classifier predicted this work was relevant to Robotics, False if the classifier predicted that this work was not relevant to Robotics, and null if the classifier was not run on this work (i.e. if the work had a non-English or null title and abstract)."
+  },
+  {
+    "name": "is_cyber",
+    "type": "BOOLEAN",
+    "description": "True if a CSET classifier predicted this work was relevant to Cybersecurity, False if the classifier predicted that this work was not relevant to Cybersecurity, and null if the classifier was not run on this work (i.e. if the work had a non-English or null title and abstract)."
   }
 ]
