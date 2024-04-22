@@ -49,26 +49,26 @@ top_fields AS (
 
 ai_pubs AS (
   SELECT
-    merged_id,
-    ai_filtered OR nlp_filtered OR cv_filtered OR robotics_filtered AS is_ai,
-    nlp_filtered AS is_nlp,
-    cv_filtered AS is_cv,
-    robotics_filtered AS is_robotics
+    orig_id,
+    ai OR nlp OR cv OR robotics AS is_ai,
+    nlp AS is_nlp,
+    cv AS is_cv,
+    robotics AS is_robotics
   FROM
-    article_classification.predictions
+    openalex_article_classification.predictions
   WHERE
-    ai_filtered IS TRUE
-    OR nlp_filtered IS TRUE
-    OR cv_filtered IS TRUE
-    OR robotics_filtered IS TRUE
+    ai IS TRUE
+    OR nlp IS TRUE
+    OR cv IS TRUE
+    OR robotics IS TRUE
 ),
 
 ai_safety_pubs AS (
   SELECT
-    merged_id,
+    orig_id,
     preds_str AS is_ai_safety
   FROM
-    ai_safety_datasets.ai_safety_predictions
+    ai_safety_openalex.ai_safety_predictions
 ),
 
 language_id AS (
@@ -102,10 +102,10 @@ LEFT JOIN
   USING (merged_id)
 LEFT JOIN
   ai_pubs
-  USING (merged_id)
+  ON id = orig_id
 LEFT JOIN
   ai_safety_pubs
-  USING (merged_id)
+  ON id = orig_id
 LEFT JOIN
   language_id
   USING (id)
