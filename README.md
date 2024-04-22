@@ -1,7 +1,7 @@
 # CSET OpenAlex metadata
 
 This project augments OpenAlex works with additional metadata prepared by CSET.
-The dataset is available at [Zenodo](link tk).
+The dataset is available at [Zenodo](https://zenodo.org/records/11034261).
 
 ## Metadata fields
 
