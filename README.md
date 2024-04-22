@@ -22,7 +22,7 @@ in the following fields:
 
 * `is_cv` - True if a computer vision classifier predicted the work was relevant
 * `is_nlp` - True if a natural language processing classifier predicted the work was relevant
-* `is_ro` - True if a robotics classifier predicted the work was relevant
+* `is_robotics` - True if a robotics classifier predicted the work was relevant
 * `is_ai` - True if an artificial intelligence classifier predicted the work was relevant, or if any of the computer vision, natural language processing, or robotics classifiers predicted the work was relevant
 * `is_cyber` - True if a cybersecurity classifier predicted the work was relevant
 
