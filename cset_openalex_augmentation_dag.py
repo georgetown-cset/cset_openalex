@@ -51,7 +51,7 @@ with DAG(
     run_dir = "current_run"
     public_bucket = "mos-static"
     table = "metadata"
-    gce_resource_id = "cset-openalex-updates"
+    gce_resource_id = "cset-openalex-updater"
 
     clear_tmp_dir = GCSDeleteObjectsOperator(
         task_id="clear_tmp_dir", bucket_name=DATA_BUCKET, prefix=tmp_dir

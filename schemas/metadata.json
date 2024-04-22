@@ -15,12 +15,6 @@
     "description": "Language of abstract, as detected by pycld2"
   },
   {
-    "mode": "REPEATED",
-    "name": "top_level1_fields",
-    "type": "STRING",
-    "description": "Top three level 1 fields of study, using method in https://aclanthology.org/2022.sdp-1.12/"
-  },
-  {
     "name": "is_ai",
     "type": "BOOLEAN",
     "description": "True if a CSET classifier predicted this work was relevant to Artificial Intelligence, False if the classifier predicted that this work was not relevant to AI, and null if the classifier was not run on this work (i.e. if the work had a non-English or null title and abstract)."
@@ -39,10 +33,5 @@
     "name": "is_robotics",
     "type": "BOOLEAN",
     "description": "True if a CSET classifier predicted this work was relevant to AI, False if the classifier predicted that this work was not relevant to Robotics, and null if the classifier was not run on this work (i.e. if the work had a non-English or null title and abstract)."
-  },
-  {
-    "name": "is_ai_safety",
-    "type": "BOOLEAN",
-    "description": "True if a CSET classifier predicted this work was relevant to AI Safety, False if the classifier predicted that this work was not relevant to AI, and null if the classifier was not run on this work. This classifier was only run on works that were predicted relevant to AI by the AI classifier (see `is_ai`)"
   }
 ]
