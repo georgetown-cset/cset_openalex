@@ -59,13 +59,13 @@ ai_pubs AS (
     openalex_article_classification.predictions
 ),
 
--- ai_safety_pubs AS (
---   SELECT
---     orig_id,
---     preds_str AS is_ai_safety
---   FROM
---     ai_safety_openalex.ai_safety_predictions
--- ),
+ai_safety_pubs AS (
+  SELECT
+    orig_id,
+    preds_str AS is_ai_safety
+  FROM
+    ai_safety_openalex.ai_safety_predictions
+),
 
 language_id AS (
   SELECT DISTINCT
@@ -89,8 +89,8 @@ SELECT
   is_nlp,
   is_cv,
   is_robotics,
-  is_cyber
---  is_ai_safety
+  is_cyber,
+  is_ai_safety
 FROM
   openalex.works
 -- LEFT JOIN
@@ -99,9 +99,9 @@ FROM
 LEFT JOIN
   ai_pubs
   ON id = ai_pubs.orig_id
--- LEFT JOIN
---   ai_safety_pubs
---   ON id = orig_id
+LEFT JOIN
+  ai_safety_pubs
+  ON id = ai_safety_pubs.orig_id
 LEFT JOIN
   language_id
   USING (id)
