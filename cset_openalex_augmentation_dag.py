@@ -44,6 +44,8 @@ def get_updated_version() -> str:
     :return: Updated semver string
     """
     oa_variable = "cset_openalex_version"
+    # This is a dict mapping "current_version" to the current semver version and "increment" to the part
+    # of the version string that should be updated ("major", "minor", or "patch")
     version_config = Variable.get(oa_variable, deserialize_json=True)
     version_to_updater = {
         "major": semver.bump_major,
