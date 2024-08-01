@@ -4,10 +4,11 @@ import json
 import requests
 
 
-def upload(data_fi: str) -> None:
+def upload(data_fi: str, version: str) -> None:
     """
     Update Zenodo bucket with new data version
     :param data_fi: Path to data to upload
+    :param version: New version string for the delivery
     :return: None
     """
     with open(".settings.txt") as f:
@@ -20,6 +21,7 @@ def upload(data_fi: str) -> None:
         params=params,
     )
     new_version_metadata = new_version_response.json()["metadata"]
+    new_version_metadata["version"] = version
     record_id = new_version_response.json()["record_id"]
 
     try:
@@ -65,6 +67,7 @@ def upload(data_fi: str) -> None:
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("--input_file", default="cset_openalex.zip")
+    parser.add_argument("--version", required=True)
     args = parser.parse_args()
 
-    upload(args.input_file)
+    upload(args.input_file, args.version)

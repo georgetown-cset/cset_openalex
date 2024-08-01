@@ -2,7 +2,9 @@ import json
 import os
 from datetime import datetime
 
+import semver
 from airflow import DAG
+from airflow.models import Variable
 from airflow.operators.bash import BashOperator
 from airflow.operators.python import BranchPythonOperator, PythonOperator
 from airflow.providers.google.cloud.operators.bigquery import (
@@ -32,6 +34,29 @@ from dataloader.scripts.populate_documentation import update_table_descriptions
 
 args = get_default_args(pocs=["Jennifer"])
 args["retries"] = 1
+
+
+def get_updated_version() -> str:
+    """
+    Get the latest semver string for the delivery, and update the corresponding airflow Variable. By default,
+    we bump the minor version with each delivery, but this function allows us to manually set a different
+    part of the semver string to bump in the variable
+    :return: Updated semver string
+    """
+    oa_variable = "cset_openalex_version"
+    version_config = Variable.get(oa_variable, deserialize_json=True)
+    version_to_updater = {
+        "major": semver.bump_major,
+        "minor": semver.bump_minor,
+        "patch": semver.bump_patch,
+    }
+    new_version = version_to_updater[version_config["increment"]](
+        version_config["current_version"]
+    )
+    Variable.set(
+        oa_variable, json.dumps({"current_version": new_version, "increment": "minor"})
+    )
+    return new_version
 
 
 with DAG(
@@ -146,6 +171,11 @@ with DAG(
         force_rerun=True,
     )
 
+    update_version = PythonOperator(
+        task_id="update_version",
+        python_callable=get_updated_version,
+    )
+
     gce_instance_start = ComputeEngineStartInstanceOperator(
         task_id=f"start-{gce_resource_id}",
         project_id=PROJECT_ID,
@@ -160,7 +190,7 @@ with DAG(
         f"gsutil -m cp -r gs://{DATA_BUCKET}/{tmp_dir}/{production_dataset} .",
         f"gsutil -m cp -r gs://{DATA_BUCKET}/{production_dataset}/upload.py .",
         f"zip -r {production_dataset}.zip {production_dataset}",
-        "python3 upload.py",
+        "python3 upload.py --version {{ task_instance.xcom_pull('update_version', key='return_value') }}",
     ]
     update_zenodo_script = " && ".join(update_zenodo_sequence)
 
@@ -186,6 +216,7 @@ with DAG(
         >> snapshot
         >> pop_descriptions
         >> export_metadata
+        >> update_version
         >> gce_instance_start
         >> update_zenodo
         >> gce_instance_stop
