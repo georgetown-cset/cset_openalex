@@ -17,7 +17,7 @@ successfully output a language and marked the output as reliable.
 ### Subject relevance predictions
 
 We share outputs for subject classifiers (for more information on how these classifiers were trained
-and deployed, see [our documentation](https://eto.tech/dataset-docs/mac/#identifying-relevance-to-emerging-technology-topics))
+and deployed, see [our documentation](https://eto.tech/dataset-docs/mac/#identifying-relevance-to-ai-and-other-emerging-topics))
 in the following fields:
 
 * `is_cv` - True if a computer vision classifier predicted the work was relevant
