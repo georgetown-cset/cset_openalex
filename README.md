@@ -25,6 +25,9 @@ in the following fields:
 * `is_robotics` - True if a robotics classifier predicted the work was relevant
 * `is_ai` - True if an artificial intelligence classifier predicted the work was relevant, or if any of the computer vision, natural language processing, or robotics classifiers predicted the work was relevant
 * `is_cyber` - True if a cybersecurity classifier predicted the work was relevant
+* `is_ai_safety` - True if an AI safety classifier predicted the work was relevant
+* `is_chip_design_fabrication` - True if a chip design and fabrication classifier predicted the work was relevant
+* `is_llm` - True if a large language model classifier predicted the work was relevant
 
 ## Updating the dataset
 

@@ -67,6 +67,30 @@ ai_safety_pubs AS (
     ai_safety_openalex.ai_safety_predictions
 ),
 
+chip_pubs AS (
+  SELECT
+    orig_id,
+    label AS is_chip_design_fabrication
+  FROM
+    vertex_batches_us.chip_classifier_predictions
+  INNER JOIN
+    literature.sources
+    USING (merged_id)
+  WHERE dataset = "openalex"
+),
+
+llm_pubs AS (
+  SELECT
+    orig_id,
+    label AS is_llm
+  FROM
+    almanac_classifiers.llm_classifier_predictions
+  INNER JOIN
+    literature.sources
+    USING (merged_id)
+  WHERE dataset = "openalex"
+),
+
 language_id AS (
   SELECT DISTINCT
     id,
@@ -90,7 +114,9 @@ SELECT
   is_cv,
   is_robotics,
   is_cyber,
-  is_ai_safety
+  is_ai_safety,
+  is_chip_design_fabrication,
+  is_llm
 FROM
   openalex.works
 -- LEFT JOIN
@@ -102,6 +128,12 @@ LEFT JOIN
 LEFT JOIN
   ai_safety_pubs
   ON id = ai_safety_pubs.orig_id
+LEFT JOIN
+  chip_pubs
+  ON id = chip_pubs.orig_id
+LEFT JOIN
+  llm_pubs
+  ON id = llm_pubs.orig_id
 LEFT JOIN
   language_id
   USING (id)

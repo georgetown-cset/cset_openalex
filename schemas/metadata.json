@@ -43,5 +43,15 @@
     "name": "is_ai_safety",
     "type": "BOOLEAN",
     "description": "True if a CSET classifier predicted this work was relevant to AI Safety, False if the classifier predicted that this work was not relevant to AI Safety, and null if the classifier was not run on this work. This classifier was only run on works that were predicted relevant to AI by the AI classifier (see `is_ai`)."
+  },
+  {
+    "name": "is_chip_design_fabrication",
+    "type": "BOOLEAN",
+    "description": "True if a CSET classifier predicted this work was relevant to chip design and fabrication, False if the classifier predicted that this work was not relevant to chip design and fabrication, and null if the classifier was not run on this work (i.e. if the work had a non-English or null title and abstract)."
+  },
+  {
+    "name": "is_llm",
+    "type": "BOOLEAN",
+    "description": "True if a CSET classifier predicted this work was relevant to large language models, False if the classifier predicted that this work was not relevant to large language models, and null if the classifier was not run on this work (i.e. if the work had a non-English or null title and abstract). This classifier was only run on works that were predicted relevant to AI by the AI classifier (see `is_ai`)."
   }
 ]
