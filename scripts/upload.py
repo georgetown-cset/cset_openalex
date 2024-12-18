@@ -4,10 +4,11 @@ import json
 import requests
 
 
-def upload(data_fi: str, version: str) -> None:
+def upload(data_fi: str, deposition_id: str, version: str) -> None:
     """
     Update Zenodo bucket with new data version
     :param data_fi: Path to data to upload
+    :param deposition_id: Zenodo deposition id
     :param version: New version string for the delivery
     :return: None
     """
@@ -15,7 +16,6 @@ def upload(data_fi: str, version: str) -> None:
         token = f.read().strip()
     params = {"access_token": token}
     # create a new version
-    deposition_id = 11034261
     new_version_response = requests.post(
         f"https://zenodo.org/api/deposit/depositions/{deposition_id}/actions/newversion",
         params=params,
@@ -66,8 +66,9 @@ def upload(data_fi: str, version: str) -> None:
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
-    parser.add_argument("--input_file", default="cset_openalex.zip")
+    parser.add_argument("--export_file", default="cset_openalex.zip")
+    parser.add_argument("--deposition_id", default="11034261")
     parser.add_argument("--version", required=True)
     args = parser.parse_args()
 
-    upload(args.input_file, args.version)
+    upload(args.export_file, args.deposition_id, args.version)

@@ -30,35 +30,11 @@ from dataloader.airflow_utils.defaults import (
     get_default_args,
     get_post_success,
 )
+from dataloader.airflow_utils.utils import get_updated_version
 from dataloader.scripts.populate_documentation import update_table_descriptions
 
 args = get_default_args(pocs=["Jennifer"])
 args["retries"] = 1
-
-
-def get_updated_version() -> str:
-    """
-    Get the latest semver string for the delivery, and update the corresponding airflow Variable. By default,
-    we bump the minor version with each delivery, but this function allows us to manually set a different
-    part of the semver string to bump in the variable
-    :return: Updated semver string
-    """
-    oa_variable = "cset_openalex_version"
-    # This is a dict mapping "current_version" to the current semver version and "increment" to the part
-    # of the version string that should be updated ("major", "minor", or "patch")
-    version_config = Variable.get(oa_variable, deserialize_json=True)
-    version_to_updater = {
-        "major": semver.bump_major,
-        "minor": semver.bump_minor,
-        "patch": semver.bump_patch,
-    }
-    new_version = version_to_updater[version_config["increment"]](
-        version_config["current_version"]
-    )
-    Variable.set(
-        oa_variable, json.dumps({"current_version": new_version, "increment": "minor"})
-    )
-    return new_version
 
 
 with DAG(
@@ -76,7 +52,6 @@ with DAG(
     schema_dir = f"schemas/{production_dataset}"
     curr_date = datetime.now().strftime("%Y%m%d")
     run_dir = "current_run"
-    public_bucket = "mos-static"
     table = "metadata"
     gce_resource_id = "cset-openalex-updater"
 
@@ -175,7 +150,7 @@ with DAG(
 
     update_version = PythonOperator(
         task_id="update_version",
-        python_callable=get_updated_version,
+        python_callable=lambda: get_updated_version("cset_openalex_version"),
     )
 
     gce_instance_start = ComputeEngineStartInstanceOperator(
