@@ -173,7 +173,7 @@ with DAG(
 
     update_zenodo = BashOperator(
         task_id="update_zenodo",
-        bash_command=f'gcloud compute ssh jm3312@{gce_resource_id} --zone {GCP_ZONE} --command "{update_zenodo_script}"',
+        bash_command=f'gcloud compute ssh airflow@{gce_resource_id} --zone {GCP_ZONE} --command "{update_zenodo_script}"',
     )
 
     gce_instance_stop = ComputeEngineStopInstanceOperator(
