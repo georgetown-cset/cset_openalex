@@ -35,7 +35,7 @@ chip_pubs AS (
   SELECT
     sources.orig_id,
     if(chip_predictions.merged_id IS NULL, FALSE, TRUE)
-      AS is_chip_design_fabrication
+    AS is_chip_design_fabrication
   FROM
     literature.sources
   LEFT JOIN
@@ -53,7 +53,7 @@ llm_pubs AS (
   -- Get the merged_id for each OA orig_id from sources, which should be 1:1
   INNER JOIN
     literature.sources
-    ON ai_pubs.id = sources.orig_id
+    ON ai_pubs.orig_id = sources.orig_id
   -- llm_predictions contains merged_ids for predicted-true pubs
   LEFT JOIN
     almanac_classifiers.llm_predictions
