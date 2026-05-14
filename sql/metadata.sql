@@ -78,6 +78,18 @@ language_id AS (
     )) AS abstract_language
   FROM
     staging_literature.all_metadata_with_cld2_lid
+),
+
+clusters AS (
+  SELECT
+    sources.orig_id AS id,
+    cluster_id
+  FROM
+    literature.sources
+  INNER JOIN
+    map_of_science.cluster_assignment
+    USING (merged_id)
+  WHERE sources.dataset = "openalex"
 )
 
 SELECT
@@ -92,7 +104,8 @@ SELECT
   ai_pubs.is_cyber,
   ai_safety_pubs.is_ai_safety,
   chip_pubs.is_chip_design_fabrication,
-  llm_pubs.is_llm
+  llm_pubs.is_llm,
+  clusters.cluster_id
 FROM
   openalex.works
 LEFT JOIN
@@ -110,3 +123,6 @@ LEFT JOIN
 LEFT JOIN
   language_id
   ON works.id = language_id.id
+LEFT JOIN
+  clusters
+  ON works.id = clusters.id
