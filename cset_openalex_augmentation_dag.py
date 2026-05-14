@@ -34,7 +34,7 @@ from dataloader.airflow_utils.utils import get_updated_version
 from dataloader.scripts.populate_documentation import update_table_descriptions
 
 args = get_default_args(pocs=["Katherine"])
-args["retries"] = 1
+args["retries"] = 2
 
 
 with DAG(
@@ -194,8 +194,10 @@ with DAG(
         >> pop_descriptions
         >> export_metadata
         >> update_version
-        >> gce_instance_start
+        >> gce_instance_start.as_setup()
         >> update_zenodo
-        >> gce_instance_stop
+        >> gce_instance_stop.as_teardown()
         >> msg_success
     )
+
+    gce_instance_start >> gce_instance_stop
